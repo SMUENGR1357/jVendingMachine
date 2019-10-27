@@ -1,0 +1,36 @@
+ItemName,Cost,Location,Stock
+Motor Encoder,40,0,3
+NA,0,1,0
+Ping Sensor,20,2,6
+Ping Sensor,20,3,0
+NA,0,4,0
+Decorative Octopus,500,10,1
+Popsicle Sticks,10,11,4
+5v Regulator,50,12,5
+Motor Controller,40,13,8
+Motor Board,100,14,2
+NA,0,20,0
+4 Shaft Collars,5,21,8
+5v Regulator,50,22,5
+Motor Controller,40,23,0
+NA,0,24,0
+NA,0,30,0
+Decorative Octopus,500,31,1
+NA,0,32,0
+Arduino,200,33,6
+NA,0,34,0
+NA,0,40,0
+NA,0,41,0
+3 Amp Fuses,5,42,9
+Bump Sensor,15,43,8
+4 Amp Fuses,5,44,3
+NA,0,45,0
+IR Sensor,10,46,4
+Battery Connectors,10,47,8
+20 Nut Plates,20,48,10
+Copper Plates,5,49,9
+360 Servo,50,50,4
+180 Servo,50,51,0
+180 Servo,50,52,4
+Motor,60,53,0
+Motor,60,54,8
