@@ -1,14 +1,10 @@
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
-import javafx.event.EventHandler;
 import javafx.scene.Scene;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.web.WebView;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.KeyListener;
 import java.net.URL;
 import java.util.HashMap;
 
@@ -24,14 +20,12 @@ public class VendingMachineGUI {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         frame = new JFrame();
         frame.setUndecorated(true);
-        jfxPanel = new JFXPanel(); // Scrollable JCompenent
+        jfxPanel = new JFXPanel();
         frame.add(jfxPanel);
         jfxPanel.setSize(screenSize);
         frame.setSize(screenSize);
         frame.setVisible(true);
         jfxPanel.setVisible(true);
-
-
 
 
     }
