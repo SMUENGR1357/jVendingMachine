@@ -7,8 +7,8 @@ public class VendingMachine {
     public static final String COMPORT = "COM1";
 
     public VendingMachine() {
-        setupComms();
         setupDatabase();
+        setupComms();
     }
 
     private void setupComms() {
@@ -26,7 +26,7 @@ public class VendingMachine {
     }
 
     private void setupDatabase() {
-        database = new VendingMachineDB("VM_Items.csv", "VM_Users.csv", "VM_Credits.csv");
+        database = new VendingMachineDB("VM_Items.csv", "VM_Users.csv", "VM_Credit.csv");
     }
 
 
@@ -37,7 +37,7 @@ public class VendingMachine {
             System.out.println("No stock was found for item " + toVend.name);
             return false;
         }
-        if(database.getCredit(vendTo) < toVend.cost){
+        if (database.getCredit(vendTo) < toVend.cost) {
             System.out.println("Not enough $$ available for user " + vendTo.name);
         }
 
@@ -50,5 +50,17 @@ public class VendingMachine {
         database.decrementStock(toVend.slot);
         database.subtractFunds(vendTo, toVend.cost);
         return true;
+    }
+
+    public String getName(long id) {
+        return database.getUser(id).name;
+    }
+
+    public int getCredit(long id) {
+        return database.getCredit(database.getUser(id));
+    }
+
+    public Item getItem(int itemID){
+        return database.getItem(itemID);
     }
 }

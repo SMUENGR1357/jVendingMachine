@@ -19,6 +19,10 @@ public class VendingMachineDB {
 
     public VendingMachineDB(String itemCSV, String userCSV, String creditCSV) {
         itemsCSV = itemCSV;
+
+        File f = new File(itemsCSV);
+        System.out.println(f.getAbsoluteFile());
+
         usersCSV = userCSV;
         creditsCSV = creditCSV;
         items = new ConcurrentHashMap<>();
@@ -68,8 +72,10 @@ public class VendingMachineDB {
     }
 
     public void subtractFunds(User user, int cost) {
-        if (!user.admin)
+        if (!user.admin) {
             teamCredit.put(user.team, teamCredit.get(user.team) - cost);
+            dbUpdatedCredits = true;
+        }
     }
 
     public int checkQuantity(int slot) {
@@ -85,11 +91,11 @@ public class VendingMachineDB {
         dbUpdatedItems = true;
     }
 
-    public User getUser(long ID){
+    public User getUser(long ID) {
         return users.get(ID);
     }
 
-    public Item getItem(int ID){
+    public Item getItem(int ID) {
         return items.get(ID);
     }
 
@@ -98,7 +104,9 @@ public class VendingMachineDB {
 
         public void run() {
             while (true) {
+                System.out.println("Updating files...");
                 if (dbUpdatedItems) {
+                    System.out.println("\tUpdating Items csv");
                     File f = new File(itemsCSV);
                     f.delete();
                     try {
@@ -118,6 +126,7 @@ public class VendingMachineDB {
                 }
                 if (dbUpdatedCredits) {
                     File f = new File(creditsCSV);
+                    System.out.println("\tUpdating credits CSV");
                     f.delete();
                     try {
                         BufferedWriter writer = new BufferedWriter(new FileWriter(f));
@@ -131,7 +140,7 @@ public class VendingMachineDB {
                     }
                     dbUpdatedCredits = false;
                 }
-
+                System.out.println("Done updating files.");
                 try {
                     Thread.sleep(WAIT_TIME);
                 } catch (InterruptedException e) {
