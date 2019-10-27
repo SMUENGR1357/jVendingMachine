@@ -1,8 +1,13 @@
 public class Item {
     public String name;
-    public int[] slots;
-    public Item(String name, int[] slots){
+    public int slot;
+    public int quantity;
+    public int cost;
+
+    public Item(String name, int cost, int slots, int quantity) {
         this.name = name;
-        this.slots = slots;
+        this.cost = cost;
+        this.slot = slots;
+        this.quantity = quantity;
     }
 }
