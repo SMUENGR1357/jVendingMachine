@@ -1,3 +1,4 @@
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 
 public class MainDriver {
@@ -27,12 +28,22 @@ public class MainDriver {
     private static String userInput = "";
 
     public static void keyTyped(KeyEvent e) {
-        if (!e.getCharacter().equals("="))
-            userInput += e.getCharacter();
-        else {
+        if (current == PAGE.HOME && userInput.indexOf("?+") > -1 && userInput.indexOf("?", userInput.indexOf("?+") + 1) > -1) {
+            String ID = userInput.substring(userInput.indexOf("+") + 1, userInput.indexOf("=", userInput.indexOf("+") - 1));
+            System.out.println("User " + ID + " swiped card.");
+            if (ID.length() != 8)
+                userInput = "";
+            else
+                swipeUser(Long.parseLong(ID));
+        } else userInput += e.getCharacter();
+
+        if (e.getCharacter().compareTo(" ") == -19)/*Numpad enter key*/ {
             switch (current) {
                 case HOME: {
+                    Long ID = Long.parseLong(userInput);
+                    if(("" + ID).length() == 8)
                     swipeUser(Long.parseLong(userInput));
+                    else userInput="";
                     break;
                 }
                 case SWIPED: {
@@ -49,6 +60,7 @@ public class MainDriver {
     private static PageTimeout currentTimeout;
 
     public static void swipeUser(long userID) {
+        System.out.println("USER ID: " + userID);
         currentUser = userID;
         vendGUI.loadPage(PAGE.SWIPED.ordinal());
         currentTimeout.finishTimeout = true;

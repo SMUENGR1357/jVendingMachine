@@ -26,7 +26,7 @@ public class VendingMachineGUI {
         frame.setSize(screenSize);
         frame.setVisible(true);
         jfxPanel.setVisible(true);
-
+        frame.setAutoRequestFocus(true);
 
     }
 
@@ -40,7 +40,9 @@ public class VendingMachineGUI {
             WebView webView = new WebView();
             webView.getEngine().load(pages.get(pageName));
             Scene toLoad = new Scene(webView);
-            toLoad.setOnKeyTyped(event -> MainDriver.keyTyped(event));
+            toLoad.setOnKeyTyped(event ->
+                    MainDriver.keyTyped(event)
+                    );
             jfxPanel.setScene(toLoad);
         });
     }
