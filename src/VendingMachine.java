@@ -26,15 +26,19 @@ public class VendingMachine {
     }
 
     private void setupDatabase() {
-        database = new VendingMachineDB("VM_Items.csv");
+        database = new VendingMachineDB("VM_Items.csv", "VM_Users.csv", "VM_Credits.csv");
     }
 
 
-    public boolean vendItem(Item toVend) {
+    public boolean vendItem(Item toVend, User vendTo) {
         if (!database.itemStocked(toVend.slot)) {
             System.out.println("No stock was found for item " + toVend.name);
             return false;
         }
+        if(database.getCredit(vendTo) < toVend.cost){
+            System.out.println("Not enough $$ available for user " + vendTo.name);
+        }
+
         String bufferedID = "" + toVend.slot;
         if (bufferedID.length() < 2)
             bufferedID = "0" + bufferedID;
@@ -42,6 +46,7 @@ public class VendingMachine {
         System.out.println("Vending item " + toVend.name);
         serialPort.writeBytes(toWrite.getBytes(), toWrite.length());//vend item
         database.decrementStock(toVend.slot);
+        database.subtractFunds(vendTo, toVend.cost);
         return true;
     }
 }

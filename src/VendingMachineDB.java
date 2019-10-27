@@ -9,29 +9,21 @@ public class VendingMachineDB {
     private ConcurrentHashMap<String, Integer> teamCredit;
     private ConcurrentHashMap<Long, User> users;
 
-    private static class User {
-        public User(String name, Long id) {
-            this(name, id, false);
-        }
-
-        public User(String name, Long id, boolean admin) {
-            this.admin = admin;
-            this.name = name;
-            this.id = id;
-        }
-
-        String name;
-        Long id;
-        boolean admin;
-    }
-
-    private boolean dbUpdated;
+    private boolean dbUpdatedItems;
+    private boolean dbUpdatedCredits;
 
     private final String itemsCSV;
+    private final String usersCSV;
+    private final String creditsCSV;
     private Thread syncThread;
 
-    public VendingMachineDB(String itemCSV) {
+    public VendingMachineDB(String itemCSV, String userCSV, String creditCSV) {
         itemsCSV = itemCSV;
+        usersCSV = userCSV;
+        creditsCSV = creditCSV;
+        itemStock = new ConcurrentHashMap<>();
+        teamCredit = new ConcurrentHashMap<>();
+        users = new ConcurrentHashMap<>();
         try {
             BufferedReader reader = new BufferedReader(new FileReader(new File(itemsCSV)));
             String line = reader.readLine(); //Read header
@@ -43,11 +35,41 @@ public class VendingMachineDB {
                 int stock = Integer.parseInt(sT.nextToken());
                 itemStock.put(location, new Item(name, cost, location, stock));
             }
+            reader.close();
+            reader = new BufferedReader(new FileReader(new File(creditsCSV)));
+            line = reader.readLine();
+            while ((line = reader.readLine()) != null) {
+                StringTokenizer sT = new StringTokenizer(line, ",\n");
+                teamCredit.put(sT.nextToken(), Integer.parseInt(sT.nextToken()));
+            }
+            reader.close();
+            reader = new BufferedReader(new FileReader(new File(usersCSV)));
+            line = reader.readLine();
+            while ((line = reader.readLine()) != null) {
+                StringTokenizer sT = new StringTokenizer(line, ",\n");
+                Long id = Long.parseLong(sT.nextToken());
+                String name = sT.nextToken();
+                boolean admin = sT.nextToken().equals("1") ? true : false;
+                String team = sT.nextToken();
+                users.put(id, new User(name, team, id, admin));
+            }
+            reader.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
         syncThread = new SyncThread();
         syncThread.start();
+    }
+
+    public int getCredit(User user) {
+        if (user.admin)
+            return Integer.MAX_VALUE;
+        return teamCredit.get(user.team);
+    }
+
+    public void subtractFunds(User user, int cost) {
+        if (!user.admin)
+            teamCredit.put(user.team, teamCredit.get(user.team) - cost);
     }
 
     public int checkQuantity(int slot) {
@@ -60,7 +82,7 @@ public class VendingMachineDB {
 
     public void decrementStock(int slot) {
         itemStock.get(slot).quantity--;
-        dbUpdated = true;
+        dbUpdatedItems = true;
     }
 
 
@@ -69,7 +91,7 @@ public class VendingMachineDB {
 
         public void run() {
             while (true) {
-                if (dbUpdated) {
+                if (dbUpdatedItems) {
                     File f = new File(itemsCSV);
                     f.delete();
                     try {
@@ -85,7 +107,22 @@ public class VendingMachineDB {
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-                    dbUpdated = false;
+                    dbUpdatedItems = false;
+                }
+                if (dbUpdatedCredits) {
+                    File f = new File(creditsCSV);
+                    f.delete();
+                    try {
+                        BufferedWriter writer = new BufferedWriter(new FileWriter(f));
+                        writer.write("Team,Credit\n"); //Write header
+                        for (Map.Entry<String, Integer> entry : teamCredit.entrySet()) {
+                            writer.write(entry.getKey() + "," + entry.getValue() + "\n");
+                        }
+                        writer.close();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    dbUpdatedCredits = false;
                 }
 
                 try {
