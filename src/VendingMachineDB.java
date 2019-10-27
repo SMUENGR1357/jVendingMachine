@@ -5,7 +5,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class VendingMachineDB {
 
-    private ConcurrentHashMap<Integer, Item> itemStock;
+    private ConcurrentHashMap<Integer, Item> items;
     private ConcurrentHashMap<String, Integer> teamCredit;
     private ConcurrentHashMap<Long, User> users;
 
@@ -21,7 +21,7 @@ public class VendingMachineDB {
         itemsCSV = itemCSV;
         usersCSV = userCSV;
         creditsCSV = creditCSV;
-        itemStock = new ConcurrentHashMap<>();
+        items = new ConcurrentHashMap<>();
         teamCredit = new ConcurrentHashMap<>();
         users = new ConcurrentHashMap<>();
         try {
@@ -33,7 +33,7 @@ public class VendingMachineDB {
                 int cost = Integer.parseInt(sT.nextToken());
                 int location = Integer.parseInt(sT.nextToken());
                 int stock = Integer.parseInt(sT.nextToken());
-                itemStock.put(location, new Item(name, cost, location, stock));
+                items.put(location, new Item(name, cost, location, stock));
             }
             reader.close();
             reader = new BufferedReader(new FileReader(new File(creditsCSV)));
@@ -73,7 +73,7 @@ public class VendingMachineDB {
     }
 
     public int checkQuantity(int slot) {
-        return itemStock.get(slot).quantity;
+        return items.get(slot).quantity;
     }
 
     public boolean itemStocked(int slot) {
@@ -81,10 +81,17 @@ public class VendingMachineDB {
     }
 
     public void decrementStock(int slot) {
-        itemStock.get(slot).quantity--;
+        items.get(slot).quantity--;
         dbUpdatedItems = true;
     }
 
+    public User getUser(long ID){
+        return users.get(ID);
+    }
+
+    public Item getItem(int ID){
+        return items.get(ID);
+    }
 
     private class SyncThread extends Thread {
         private final int WAIT_TIME = 10 * 60 * 1000; //Check if a write to file is necessary every 10 minutes
@@ -97,7 +104,7 @@ public class VendingMachineDB {
                     try {
                         BufferedWriter writer = new BufferedWriter(new FileWriter(f));
                         writer.write("ItemName,Cost,Location,Stock\n"); //Write header
-                        for (Map.Entry<Integer, Item> entry : itemStock.entrySet()) {
+                        for (Map.Entry<Integer, Item> entry : items.entrySet()) {
                             writer.write(entry.getValue().name + "," +
                                     entry.getValue().cost + "," +
                                     entry.getValue().slot + "," +

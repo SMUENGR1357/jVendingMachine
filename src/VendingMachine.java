@@ -30,7 +30,9 @@ public class VendingMachine {
     }
 
 
-    public boolean vendItem(Item toVend, User vendTo) {
+    public boolean vendItem(int itemID, long userID) {
+        Item toVend = database.getItem(itemID);
+        User vendTo = database.getUser(userID);
         if (!database.itemStocked(toVend.slot)) {
             System.out.println("No stock was found for item " + toVend.name);
             return false;
