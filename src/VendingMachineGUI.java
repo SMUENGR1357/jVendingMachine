@@ -28,7 +28,9 @@ public class VendingMachineGUI {
         frame.setVisible(true);
         jfxPanel.setVisible(true);
         frame.setAutoRequestFocus(true);
-
+        GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        GraphicsDevice dev = env.getDefaultScreenDevice();
+        dev.setFullScreenWindow(frame);
     }
 
     public void addPage(int ID, String pageHTML) {

@@ -4,7 +4,7 @@ public class VendingMachine {
 
     private VendingMachineDB database;
     private SerialPort serialPort;
-    public static final String COMPORT = "COM1";
+    public static final String COMPORT = "/dev/ttyUSB0";
 
     public VendingMachine() {
         setupDatabase();

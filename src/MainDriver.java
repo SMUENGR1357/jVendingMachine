@@ -16,15 +16,15 @@ public class MainDriver {
 
     public static void main(String[] args) {
         vendGUI = new VendingMachineGUI();
+        current = PAGE.LOADING;
         vendGUI.addPage(PAGE.LOADING.ordinal(), "pages/loadingPage.html");
         vendGUI.addPage(PAGE.HOME.ordinal(), "pages/homePage.html");
         vendGUI.addPage(PAGE.SWIPED.ordinal(), "pages/swipedPage.html");
         vendGUI.addPage(PAGE.CONFIRM.ordinal(), "pages/confirmPurchasePage.html");
         vendGUI.loadPage(PAGE.LOADING.ordinal());
-        current = PAGE.LOADING;
         vendingMachine = new VendingMachine();
-        current = PAGE.HOME;
         vendGUI.loadPage(PAGE.HOME.ordinal());
+        current = PAGE.HOME;
         currentTimeout = new PageTimeout();
         currentTimeout.start();
     }
@@ -32,7 +32,15 @@ public class MainDriver {
     private static String userInput = "";
 
     public static void keyTyped(KeyEvent e) {
-
+        System.out.println(e.getCharacter());
+        if (current == PAGE.SWIPED && e.getCharacter().equals("-")) {
+            userInput = "";
+            currentItem = 0;
+            currentUser = 0;
+            current = PAGE.LOADING;
+            vendGUI.loadPage(PAGE.HOME.ordinal());
+            current = PAGE.HOME;
+        }
         if (current == PAGE.LOADING)
             return;
 
@@ -44,18 +52,28 @@ public class MainDriver {
             userInput += e.getCharacter();
 
 
-        if (current == PAGE.HOME && userInput.indexOf("?+") > -1 &&
-                userInput.indexOf("=", userInput.indexOf("?")) > -1 &&
-                userInput.indexOf("?", userInput.indexOf("?+") + 1) > -1) {
-            System.out.println(userInput);
-            String ID = userInput.substring(userInput.indexOf("+") + 1, userInput.indexOf("=", userInput.indexOf("+") - 1));
+        if (e.getCharacter().compareTo(" ") == -19
+                && current == PAGE.HOME &&
+                userInput.indexOf("=084") > -1
+                && userInput.indexOf("?+", userInput.indexOf("=084")) > -1)
+
+        // userInput.indexOf("?+") > -1 &&
+        //userInput.indexOf("=", userInput.indexOf("?")) > -1 &&
+        //userInput.indexOf("?", userInput.indexOf("?+") + 1) > -1
+        {
+            String ID = userInput.substring(userInput.indexOf("=084") + 4, userInput.indexOf("?+", userInput.indexOf("=084")));
+            //String ID = userInput.substring(userInput.indexOf("+") + 1, userInput.indexOf("=", userInput.indexOf("+") - 1));
             System.out.println("User " + ID + " swiped card.");
-            if (ID.length() != 8)
-                userInput = "";
-            else
-                swipeUser(Long.parseLong(ID));
+            userInput = "";
+            if (ID.length() == 8) {
+            try{        swipeUser(Long.parseLong(ID));
+            }catch(Exception ex) {
+                System.out.println("An exception occurred on swipeUser.");
+            }
+            }
         }
         if (e.getCharacter().compareTo(" ") == -19)/*Numpad enter key*/ {
+            System.out.println("Enter pressed");
             switch (current) {
                 case HOME: {
                     Long ID = 0L;
@@ -66,24 +84,23 @@ public class MainDriver {
                     }
                     if (("" + ID).length() == 8) {
                         System.out.println("User " + ID + " entered ID number.");
+                        userInput = "";
                         swipeUser(ID);
                     }
                     break;
                 }
                 case SWIPED: {
-                    if(userInput.trim().length()>0)
-                    purchaseItem(Integer.parseInt(userInput.trim()));
+                    if (userInput.trim().length() > 0)
+                        purchaseItem(Integer.parseInt(userInput.trim()));
                     break;
                 }
-                case CONFIRM:{
+                case CONFIRM: {
                     vendItem(currentItem);
                 }
             }
             userInput = "";
-        }
-        else{
-            if(current == PAGE.CONFIRM)
-            {
+        } else {
+            if (current == PAGE.CONFIRM) {
                 vendGUI.loadPage(PAGE.HOME.ordinal());
                 current = PAGE.HOME;
                 currentUser = 0;
@@ -99,6 +116,7 @@ public class MainDriver {
 
     public static void swipeUser(long userID) {
         System.out.println("USER ID: " + userID);
+        current = PAGE.LOADING;
         currentUser = userID;
         vendGUI.changePageElement(PAGE.SWIPED.ordinal(), "userName", vendingMachine.getName(currentUser));
         vendGUI.changePageElement(PAGE.SWIPED.ordinal(), "userBalance", "" + vendingMachine.getCredit(currentUser));
@@ -121,8 +139,9 @@ public class MainDriver {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                current=PAGE.HOME;
+                current = PAGE.LOADING;
                 vendGUI.loadPage(PAGE.HOME.ordinal());
+                current = PAGE.HOME;
                 currentUser = 0;
             }
         }
@@ -136,16 +155,18 @@ public class MainDriver {
         System.out.println("Confirming purchase of item " + itemID);
         currentItem = itemID;
         currentTimeout.reset();
+        current = PAGE.LOADING;
         vendGUI.changePageElement(PAGE.CONFIRM.ordinal(), "itemName", vendingMachine.getItem(itemID).name);
-        vendGUI.changePageElement(PAGE.CONFIRM.ordinal(), "itemCost", ""+vendingMachine.getItem(itemID).cost);
+        vendGUI.changePageElement(PAGE.CONFIRM.ordinal(), "itemCost", "" + vendingMachine.getItem(itemID).cost);
         vendGUI.loadPage(PAGE.CONFIRM.ordinal());
         current = PAGE.CONFIRM;
 
     }
 
-    public static void vendItem(int itemID){
+    public static void vendItem(int itemID) {
         System.out.println("Vending item " + itemID);
         vendingMachine.vendItem(itemID, currentUser);
+        current = PAGE.LOADING;
         vendGUI.loadPage(PAGE.HOME.ordinal());
         current = PAGE.HOME;
         currentUser = 0;
