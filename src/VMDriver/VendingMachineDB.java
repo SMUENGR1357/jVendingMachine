@@ -16,19 +16,9 @@ public class VendingMachineDB {
     private boolean dbUpdatedItems;
     private boolean dbUpdatedCredits;
 
-    private final String itemsCSV;
-    private final String usersCSV;
-    private final String creditsCSV;
     private Thread syncThread;
 
-    public VendingMachineDB(String itemCSV, String userCSV, String creditCSV) {
-        itemsCSV = itemCSV;
-
-        File f = new File(itemsCSV);
-        System.out.println(f.getAbsoluteFile());
-
-        usersCSV = userCSV;
-        creditsCSV = creditCSV;
+    public VendingMachineDB() {
         items = new ConcurrentHashMap<>();
         teamCredit = new ConcurrentHashMap<>();
         users = new ConcurrentHashMap<>();

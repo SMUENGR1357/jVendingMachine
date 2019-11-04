@@ -1,0 +1,19 @@
+*{
+    box-sizing: border-box;
+    background: #222;
+    text-align: center;
+}
+main{
+    height:100%;
+}
+
+
+h1{
+    line-height:100%;
+    color:#CCC;
+}
+
+h2{
+    line-height:100%;
+    color: #EEE;
+}

@@ -1,5 +1,6 @@
 package VMDriver;
 
+import UserInterface.VendingMachineGUI;
 import javafx.scene.input.KeyEvent;
 
 public class MainDriver {

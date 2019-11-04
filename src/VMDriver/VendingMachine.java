@@ -33,7 +33,7 @@ public class VendingMachine {
     }
 
     private void setupDatabase() {
-        database = new VendingMachineDB("VM_Items.csv", "VM_Users.csv", "VM_Credit.csv");
+        database = new VendingMachineDB();
     }
 
 
