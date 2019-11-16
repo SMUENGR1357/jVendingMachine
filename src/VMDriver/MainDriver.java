@@ -115,12 +115,14 @@ public class MainDriver {
                                 swipeUser(currentUser.id, false);
                                 break;
                             case 2:
+                                System.out.println("Pulling updates...");
                                 current = PAGE.LOADING;
                                 vendGUI.loadPage(PAGE.LOADING.ordinal());
                                 vendingMachine.pullUpdatesDB();
                                 changePage(PAGE.HOME);
                                 break;
                             case 3:
+                                System.out.println("Pushing updates...");
                                 current = PAGE.LOADING;
                                 vendGUI.loadPage(PAGE.LOADING.ordinal());
                                 vendingMachine.pushUpdatesDB();
