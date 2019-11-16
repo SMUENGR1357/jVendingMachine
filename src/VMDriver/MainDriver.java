@@ -107,26 +107,28 @@ public class MainDriver {
                     vendItem(currentItem);
                 }
                 case ADMIN: {
-                    int option = Integer.parseInt(userInput.trim());
-                    System.out.println("Admin option " + option);
-                    switch (option) {
-                        case 1:
-                            swipeUser(currentUser.id, false);
-                            break;
-                        case 2:
-                            current = PAGE.LOADING;
-                            vendGUI.loadPage(PAGE.LOADING.ordinal());
-                            vendingMachine.pullUpdatesDB();
-                            changePage(PAGE.HOME);
-                            break;
-                        case 3:
-                            current = PAGE.LOADING;
-                            vendGUI.loadPage(PAGE.LOADING.ordinal());
-                            vendingMachine.pushUpdatesDB();
-                            changePage(PAGE.HOME);
-                            break;
-                        default:
-                            return;
+                    if (userInput.trim().length() > 0) {
+                        int option = Integer.parseInt(userInput.trim());
+                        System.out.println("Admin option " + option);
+                        switch (option) {
+                            case 1:
+                                swipeUser(currentUser.id, false);
+                                break;
+                            case 2:
+                                current = PAGE.LOADING;
+                                vendGUI.loadPage(PAGE.LOADING.ordinal());
+                                vendingMachine.pullUpdatesDB();
+                                changePage(PAGE.HOME);
+                                break;
+                            case 3:
+                                current = PAGE.LOADING;
+                                vendGUI.loadPage(PAGE.LOADING.ordinal());
+                                vendingMachine.pushUpdatesDB();
+                                changePage(PAGE.HOME);
+                                break;
+                            default:
+                                return;
+                        }
                     }
                 }
             }
