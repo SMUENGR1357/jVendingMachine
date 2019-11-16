@@ -34,41 +34,6 @@ public class VendingMachineDB {
             System.exit(1);
         }
 
-        /*
-        try {
-            BufferedReader reader = new BufferedReader(new FileReader(new File(itemsCSV)));
-            String line = reader.readLine(); //Read header
-            while ((line = reader.readLine()) != null) {
-                StringTokenizer sT = new StringTokenizer(line, ",\n");
-                String name = sT.nextToken();
-                int cost = Integer.parseInt(sT.nextToken());
-                int location = Integer.parseInt(sT.nextToken());
-                int stock = Integer.parseInt(sT.nextToken());
-                items.put(location, new Item(name, cost, location, stock));
-            }
-            reader.close();
-            reader = new BufferedReader(new FileReader(new File(creditsCSV)));
-            line = reader.readLine();
-            while ((line = reader.readLine()) != null) {
-                StringTokenizer sT = new StringTokenizer(line, ",\n");
-                teamCredit.put(sT.nextToken(), Integer.parseInt(sT.nextToken()));
-            }
-            reader.close();
-            reader = new BufferedReader(new FileReader(new File(usersCSV)));
-            line = reader.readLine();
-            while ((line = reader.readLine()) != null) {
-                StringTokenizer sT = new StringTokenizer(line, ",\n");
-                Long id = Long.parseLong(sT.nextToken());
-                String name = sT.nextToken();
-                boolean admin = sT.nextToken().equals("1") ? true : false;
-                String team = sT.nextToken();
-                users.put(id, new User(name, team, id, admin));
-            }
-            reader.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        */
         syncThread = new SyncThread();
         syncThread.start();
 

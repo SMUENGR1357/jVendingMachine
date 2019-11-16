@@ -9,7 +9,6 @@ import org.w3c.dom.Document;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.net.URL;
 import java.util.HashMap;
 
@@ -36,13 +35,7 @@ public class VendingMachineGUI {
         jfxPanel = new JFXPanel();
         frame.add(jfxPanel);
 
-        // Transparent 16 x 16 pixel cursor image.
-        BufferedImage cursorImg = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
-        // Create a new blank cursor.
-        Cursor blankCursor = Toolkit.getDefaultToolkit().createCustomCursor(
-                cursorImg, new Point(0, 0), "blank cursor");
         // Set the blank cursor to the JFrame.
-        frame.getContentPane().setCursor(blankCursor);
         // Set size of panel / frame to screen dimension
         jfxPanel.setSize(screenSize);
         frame.setSize(screenSize);
@@ -50,8 +43,7 @@ public class VendingMachineGUI {
         frame.setVisible(true);
         jfxPanel.setVisible(true);
         // Set screen focus
-        frame.setAutoRequestFocus(true);
-
+        frame.requestFocus();
     }
 
     public void addPage(int ID, String pageHTML) {
@@ -79,6 +71,7 @@ public class VendingMachineGUI {
                     MainDriver.keyTyped(event)
             );
             jfxPanel.setScene(toLoad);
+            jfxPanel.requestFocus();
         });
     }
 

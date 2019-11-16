@@ -1,5 +1,6 @@
 package VMDriver;
 
+import Structs.User;
 import UserInterface.VendingMachineGUI;
 import javafx.scene.input.KeyEvent;
 
@@ -12,6 +13,7 @@ public class MainDriver {
         LOADING,
         HOME,
         SWIPED,
+        ADMIN,
         CONFIRM
     }
 
@@ -24,6 +26,7 @@ public class MainDriver {
         vendGUI.addPage(PAGE.HOME.ordinal(), "pages/homePage.html");
         vendGUI.addPage(PAGE.SWIPED.ordinal(), "pages/swipedPage.html");
         vendGUI.addPage(PAGE.CONFIRM.ordinal(), "pages/confirmPurchasePage.html");
+        vendGUI.addPage(PAGE.ADMIN.ordinal(), "pages/adminPage.html");
         vendGUI.loadPage(PAGE.LOADING.ordinal());
         vendingMachine = new VendingMachine();
         vendGUI.loadPage(PAGE.HOME.ordinal());
@@ -35,6 +38,7 @@ public class MainDriver {
     private static String userInput = "";
 
     public static void keyTyped(KeyEvent e) {
+        System.out.println(e.getCharacter());
         if (e.getCharacter().equals(".")) {
             userInput = userInput.substring(0, Math.max(0, userInput.length() - 1));
         } else
@@ -45,7 +49,7 @@ public class MainDriver {
                 if (e.getCharacter().equals("-")) {
                     userInput = "";
                     currentItem = 0;
-                    currentUser = 0;
+                    currentUser = null;
                     current = PAGE.LOADING;
                     vendGUI.loadPage(PAGE.HOME.ordinal());
                     current = PAGE.HOME;
@@ -88,7 +92,7 @@ public class MainDriver {
                         System.out.println("\tCould not parse ID " + userInput);
                     }
                     if (("" + ID).length() == 8) {
-                        System.out.println("Structs.User " + ID + " entered ID number.");
+                        System.out.println("User " + ID + " entered ID number.");
                         userInput = "";
                         swipeUser(ID);
                     }
@@ -102,6 +106,29 @@ public class MainDriver {
                 case CONFIRM: {
                     vendItem(currentItem);
                 }
+                case ADMIN: {
+                    int option = Integer.parseInt(userInput.trim());
+                    System.out.println("Admin option " + option);
+                    switch (option) {
+                        case 1:
+                            swipeUser(currentUser.id, false);
+                            break;
+                        case 2:
+                            current = PAGE.LOADING;
+                            vendGUI.loadPage(PAGE.LOADING.ordinal());
+                            vendingMachine.pullUpdatesDB();
+                            changePage(PAGE.HOME);
+                            break;
+                        case 3:
+                            current = PAGE.LOADING;
+                            vendGUI.loadPage(PAGE.LOADING.ordinal());
+                            vendingMachine.pushUpdatesDB();
+                            changePage(PAGE.HOME);
+                            break;
+                        default:
+                            return;
+                    }
+                }
             }
             userInput = "";
         } else {
@@ -111,21 +138,34 @@ public class MainDriver {
         }
     }
 
-    private static long currentUser;
+    private static User currentUser;
     private static int currentItem;
 
     private static PageTimeout currentTimeout;
 
-    public static void swipeUser(long userID) {
+    public static void swipeUser(long userID, boolean adminEnabled) {
         System.out.println("USER ID: " + userID);
         current = PAGE.LOADING;
-        currentUser = userID;
-        vendGUI.modifyPageHTML(PAGE.SWIPED.ordinal(), "userName", vendingMachine.getUser(currentUser).name);
-        vendGUI.modifyPageHTML(PAGE.SWIPED.ordinal(), "userBalance", "" + vendingMachine.getCredit(currentUser));
-        vendGUI.loadPage(PAGE.SWIPED.ordinal());
-        current = PAGE.SWIPED;
-        currentTimeout.reset();
+        if (!adminEnabled) {
+            System.out.println("Entering student menu.");
+            vendGUI.modifyPageHTML(PAGE.SWIPED.ordinal(), "userName", currentUser.name);
+            vendGUI.modifyPageHTML(PAGE.SWIPED.ordinal(), "userBalance", "" + vendingMachine.getCredit(currentUser.id));
+            vendGUI.loadPage(PAGE.SWIPED.ordinal());
+            current = PAGE.SWIPED;
+        } else {
+            System.out.println("Entering admin menu.");
+            current = PAGE.LOADING;
+            vendGUI.loadPage(PAGE.ADMIN.ordinal());
+            current = PAGE.ADMIN;
+        }
         userInput = "";
+        currentTimeout.reset();
+
+    }
+
+    public static void swipeUser(long userID) {
+        currentUser = vendingMachine.getUser(userID);
+        swipeUser(userID, currentUser.admin);
     }
 
     private static class PageTimeout extends Thread {
@@ -165,13 +205,13 @@ public class MainDriver {
 
     public static void vendItem(int itemID) {
         System.out.println("Vending item " + itemID);
-        vendingMachine.vendItem(itemID, currentUser);
+        vendingMachine.vendItem(itemID, currentUser.id);
         changePage(PAGE.HOME);
     }
 
-    public static void changePage(PAGE changeTo){
+    public static void changePage(PAGE changeTo) {
         userInput = "";
-        currentUser = 0;
+        currentUser = null;
         currentItem = 0;
         current = PAGE.LOADING;
         vendGUI.loadPage(changeTo.ordinal());

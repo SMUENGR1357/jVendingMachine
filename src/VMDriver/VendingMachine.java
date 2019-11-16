@@ -71,4 +71,20 @@ public class VendingMachine {
     public Item getItem(int itemID){
         return database.getItem(itemID);
     }
+
+    public void pushUpdatesDB(){
+        try {
+            database.pushDatabaseUpdates();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void pullUpdatesDB(){
+        try {
+            database.pullDatabaseUpdates();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }
