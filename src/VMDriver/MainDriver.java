@@ -78,6 +78,42 @@ public class MainDriver {
                 break;
             }
 
+            case ADMIN: {
+                String str = userInput.trim();
+                if (str.length() > 0) {
+                    int option = 0;
+                    try {
+                        option = Integer.parseInt(str.trim());
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                    System.out.println("Admin option " + option);
+                    switch (option) {
+                        case 1:
+                            swipeUser(currentUser.id, false);
+                            break;
+                        case 2:
+                            System.out.println("Pulling updates...");
+                            current = PAGE.LOADING;
+                            vendGUI.loadPage(PAGE.LOADING.ordinal());
+                            vendingMachine.pullUpdatesDB();
+                            changePage(PAGE.HOME);
+                            break;
+                        case 3:
+                            System.out.println("Pushing updates...");
+                            current = PAGE.LOADING;
+                            vendGUI.loadPage(PAGE.LOADING.ordinal());
+                            vendingMachine.pushUpdatesDB();
+                            changePage(PAGE.HOME);
+                            break;
+                        default:
+                            System.out.println("Returning to homescreen.");
+                            changePage(PAGE.HOME);
+                            break;
+                    }
+                }
+            }
+
             default: {
             }
         }
@@ -106,33 +142,7 @@ public class MainDriver {
                 case CONFIRM: {
                     vendItem(currentItem);
                 }
-                case ADMIN: {
-                    if (userInput.trim().length() > 0) {
-                        int option = Integer.parseInt(userInput.trim());
-                        System.out.println("Admin option " + option);
-                        switch (option) {
-                            case 1:
-                                swipeUser(currentUser.id, false);
-                                break;
-                            case 2:
-                                System.out.println("Pulling updates...");
-                                current = PAGE.LOADING;
-                                vendGUI.loadPage(PAGE.LOADING.ordinal());
-                                vendingMachine.pullUpdatesDB();
-                                changePage(PAGE.HOME);
-                                break;
-                            case 3:
-                                System.out.println("Pushing updates...");
-                                current = PAGE.LOADING;
-                                vendGUI.loadPage(PAGE.LOADING.ordinal());
-                                vendingMachine.pushUpdatesDB();
-                                changePage(PAGE.HOME);
-                                break;
-                            default:
-                                return;
-                        }
-                    }
-                }
+
             }
             userInput = "";
         } else {
@@ -169,8 +179,8 @@ public class MainDriver {
 
     public static void swipeUser(long userID) {
         currentUser = vendingMachine.getUser(userID);
-        if(currentUser!=null)
-        swipeUser(userID, currentUser.admin);
+        if (currentUser != null)
+            swipeUser(userID, currentUser.admin);
     }
 
     private static class PageTimeout extends Thread {
