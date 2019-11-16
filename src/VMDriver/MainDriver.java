@@ -169,6 +169,7 @@ public class MainDriver {
 
     public static void swipeUser(long userID) {
         currentUser = vendingMachine.getUser(userID);
+        if(currentUser!=null)
         swipeUser(userID, currentUser.admin);
     }
 

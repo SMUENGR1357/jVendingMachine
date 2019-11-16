@@ -163,7 +163,7 @@ public class GoogleSheetsDB {
         for (User u : users.values()) {
             toWrite.add(
                     new ArrayList<>(
-                            Arrays.asList(u.id, u.name, u.admin, u.team)
+                            Arrays.asList(u.id, u.name, u.admin ? 1 : 0, u.team)
                     )
             );
         }
